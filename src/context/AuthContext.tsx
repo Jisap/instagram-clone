@@ -31,9 +31,9 @@ type IContextType = {
   checkAuthUser: () => Promise<boolean>;
 };
 
-const AuthContext = createContext<IContextType>(INITIAL_STATE);             // Context para Auth
+const AuthContext = createContext<IContextType>(INITIAL_STATE);             // Context para Auth (state del user)
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // Provider para Auth (métodos)
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // Provider para Auth (método y estados asociados al user)
 
   const navigate = useNavigate();
   const [user, setUser] = useState<IUser>(INITIAL_USER);

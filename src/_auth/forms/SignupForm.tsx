@@ -14,9 +14,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast"
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/querysAndMutation";
+import { useUserContext } from "@/context/AuthContext";
 
 
 
@@ -24,6 +25,9 @@ import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/querys
 const SignupForm = () => {
 
   const { toast } = useToast();
+  const {checkAuthUser, isLoading: isUserLoading } = useUserContext();
+
+  const navigate = useNavigate();
 
   const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccount();
   const { mutateAsync: signInAccount, isLoading: isSigningIn } = useSignInAccount();
@@ -41,7 +45,7 @@ const SignupForm = () => {
   
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    const newUser = await createUserAccount(values);
+    const newUser = await createUserAccount(values);  // Crea un usuario nuevo
     
     if(!newUser){
       return toast({
@@ -49,13 +53,23 @@ const SignupForm = () => {
       })
     }
 
-    const session = await signInAccount({
+    const session = await signInAccount({ // loguea al usuario
       email: values.email,
       password: values.password
     })
 
     if(!session){
       return toast({title: 'Sign in failed. Please try again.'})
+    }
+
+    const isLoggedIn = await checkAuthUser(); // Se obtiene el usuario logueado de la bd y se verifica su logueo
+
+    if(isLoggedIn){
+      form.reset();
+      navigate('/')
+      
+    }else{
+      return toast({ title: 'sign up failed. Please try again.'});
     }
   }
 
