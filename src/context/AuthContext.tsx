@@ -72,9 +72,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // P
     const cookieFallback = localStorage.getItem("cookieFallback"); // Cada vez que use el provider sino tenemos la cookie redirección a sign-in
     
     if (
-      cookieFallback === "[]" ||
-      cookieFallback === null ||
-      cookieFallback === undefined
+      cookieFallback === "[]" //||
+      // cookieFallback === null ||
+      // cookieFallback === undefined
     ) {
       navigate("/sign-in");
     }
