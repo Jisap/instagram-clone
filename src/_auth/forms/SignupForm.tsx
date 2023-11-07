@@ -29,8 +29,8 @@ const SignupForm = () => {
 
   const navigate = useNavigate();
 
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccount();
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } = useSignInAccount();
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } = useCreateUserAccount();
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -67,7 +67,7 @@ const SignupForm = () => {
     if(isLoggedIn){
       form.reset();
       navigate('/')
-      
+
     }else{
       return toast({ title: 'sign up failed. Please try again.'});
     }
