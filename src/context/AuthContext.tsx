@@ -31,16 +31,16 @@ type IContextType = {
   checkAuthUser: () => Promise<boolean>;
 };
 
-const AuthContext = createContext<IContextType>(INITIAL_STATE);         
+const AuthContext = createContext<IContextType>(INITIAL_STATE);             // Context para Auth
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // Provider para Auth (métodos)
 
   const navigate = useNavigate();
   const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);            // Estados
 
-  const checkAuthUser = async () => { 
+  const checkAuthUser = async () => {                                       // Obtiene el usuario logueado -> setUser - setIsAuthenticated
     setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
@@ -69,7 +69,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   useEffect(() => {
-    const cookieFallback = localStorage.getItem("cookieFallback");
+    const cookieFallback = localStorage.getItem("cookieFallback"); // Cada vez que use el provider sino tenemos la cookie redirección a sign-in
+    
     if (
       cookieFallback === "[]" ||
       cookieFallback === null ||
@@ -78,10 +79,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       navigate("/sign-in");
     }
 
-    checkAuthUser();
+    checkAuthUser(); // Si tenemos la cookie obtenemos el usuario logueado -> setUser -> setIsAuthenticated
   }, []);
 
-  const value = {
+  const value = {   // Valores y métodos que se comparten a la app
     user,
     setUser,
     isLoading,
@@ -101,5 +102,5 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export default AuthProvider;
 
-export const useUserContext = () => useContext(AuthContext);
+export const useUserContext = () => useContext(AuthContext); // context para user basado en AuthContext
 
