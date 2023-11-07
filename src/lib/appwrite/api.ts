@@ -11,7 +11,7 @@ import { IUpdatePost, INewPost, INewUser, IUpdateUser } from "@/types";
 export async function createUserAccount(user: INewUser) {
   try {
 
-    const newAccount = await account.create(
+    const newAccount = await account.create(  // Crea la cuenta del usuario en el apartado de auth de appwrite
       ID.unique(),
       user.email,
       user.password,
@@ -22,7 +22,7 @@ export async function createUserAccount(user: INewUser) {
 
     const avatarUrl = avatars.getInitials(user.name);
 
-    const newUser = await saveUserToDB({
+    const newUser = await saveUserToDB({  // Grabamos en bd los datos del usuario más el avatarUrl si existe
       accountId: newAccount.$id,
       name: newAccount.name,
       email: newAccount.email,
@@ -30,7 +30,7 @@ export async function createUserAccount(user: INewUser) {
       imageUrl: avatarUrl,
     });
 
-    return newUser;
+    return newUser; // Devolvemos el newuser
 
   } catch (error) {
     console.log(error);
