@@ -24,30 +24,62 @@ const INITIAL_STATE = {
 
 type IContextType = {
   user: IUser;
-  setUser: React.Dispatch<React.SetStateAction<IUser>>;
   isLoading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<IUser>>;
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   checkAuthUser: () => Promise<boolean>;
 };
 
-const AuthContext = createContext<IContextType>(INITIAL_STATE);
+const AuthContext = createContext<IContextType>(INITIAL_STATE);         
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
+  const navigate = useNavigate();
   const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const checkAuthUser = async () => { 
+    setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
+      
+      if(currentAccount){
+        setUser({ 
+          id: currentAccount.$id, 
+          name: currentAccount.name, 
+          username: currentAccount.username, 
+          email: currentAccount.email, 
+          imageUrl: currentAccount.imageUrl, 
+          bio: currentAccount.bio 
+        })
+        setIsAuthenticated(true);
+        return true;
+      }
+
+      return false;
+
     } catch (error) {
       console.log(error)
-      false
+      return false
     }finally{
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    const cookieFallback = localStorage.getItem("cookieFallback");
+    if (
+      cookieFallback === "[]" ||
+      cookieFallback === null ||
+      cookieFallback === undefined
+    ) {
+      navigate("/sign-in");
+    }
+
+    checkAuthUser();
+  }, []);
 
   const value = {
     user,
@@ -67,4 +99,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default AuthContext
+export default AuthProvider;
+
+export const useUserContext = () => useContext(AuthContext);
+

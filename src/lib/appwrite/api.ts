@@ -83,7 +83,7 @@ export async function getCurrentUser() {
     const currentUser = await databases.listDocuments(  // Se pide una lista
       appwriteConfig.databaseId,                        // a la base de datos
       appwriteConfig.userCollectionId,                  // de todos los usuarios de la colección de usuarios
-      [Query.equal("accountId", currentAccount.$id)]    // filtrandola lista para solo incluir a los usuarios cuya accountId == usuario logueado
+      [Query.equal("accountId", currentAccount.$id)]    // filtrando la lista para solo incluir a los usuarios cuya accountId == usuario logueado
     );
 
     if (!currentUser) throw Error;
