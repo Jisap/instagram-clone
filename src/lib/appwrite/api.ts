@@ -59,3 +59,39 @@ export async function saveUserToDB(user: {
     console.log(error);
   }
 }
+
+// ============================== SIGN IN
+export async function signInAccount(user: { email: string; password: string }) {
+  try {
+    const session = await account.createEmailSession(user.email, user.password);
+
+    return session;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+// ============================== GET USER
+export async function getCurrentUser() {
+  try {
+
+    const currentAccount = await account.get();        // usuario logueado
+
+    if (!currentAccount) throw Error;
+
+    const currentUser = await databases.listDocuments(  // Se pide una lista
+      appwriteConfig.databaseId,                        // a la base de datos
+      appwriteConfig.userCollectionId,                  // de todos los usuarios de la colección de usuarios
+      [Query.equal("accountId", currentAccount.$id)]    // filtrandola lista para solo incluir a los usuarios cuya accountId == usuario logueado
+    );
+
+    if (!currentUser) throw Error;
+
+    return currentUser.documents[0];                    // Se devuelve el primer usuario de la lista
+
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
