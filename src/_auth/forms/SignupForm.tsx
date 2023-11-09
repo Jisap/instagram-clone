@@ -25,12 +25,12 @@ import { useUserContext } from "@/context/AuthContext";
 const SignupForm = () => {
 
   const { toast } = useToast();
-  const {checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext(); // context para user basado en AuthContext
 
   const navigate = useNavigate();
 
-  const { mutateAsync: createUserAccount, isPending: isCreatingUser } = useCreateUserAccount();
-  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } = useCreateUserAccount(); // Mutación de Tanstack para crear un user con appwrite
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();            // Mutación de Tanstack para crear una session en appwrite
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
