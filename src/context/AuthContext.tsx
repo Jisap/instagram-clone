@@ -33,7 +33,7 @@ type IContextType = {
 
 const AuthContext = createContext<IContextType>(INITIAL_STATE);             // Context para Auth (state del user)
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // Provider para Auth (método y estados asociados al user)
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // Provider para Auth (método y estados asociados al user)
 
   const navigate = useNavigate();
   const [user, setUser] = useState<IUser>(INITIAL_USER);
@@ -54,10 +54,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // P
           imageUrl: currentAccount.imageUrl, 
           bio: currentAccount.bio 
         })
-        setIsAuthenticated(true);
+        
         return true;
       }
-
+      setIsAuthenticated(false);
       return false;
 
     } catch (error) {
@@ -100,7 +100,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {     // P
   )
 }
 
-export default AuthProvider;
+//export default AuthProvider;
 
 export const useUserContext = () => useContext(AuthContext); // context para user basado en AuthContext
 
