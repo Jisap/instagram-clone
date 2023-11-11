@@ -6,9 +6,14 @@ import {
 } from "@tanstack/react-query";
 import { 
   createUserAccount,
-  signInAccount 
+  signInAccount, 
+  signOutAccount
 } from "../appwrite/api";
 import { INewUser } from "@/types";
+
+// ============================================================
+// AUTH QUERIES
+// ============================================================
 
 export const useCreateUserAccount = () => {         // Tanstack query usa la mutation de Appwrite para hacer la creación del user
   return useMutation({
@@ -21,3 +26,9 @@ export const useSignInAccount = () => {
     mutationFn: (user: { email: string; password: string; }) => signInAccount(user)
   })
 }
+
+export const useSignOutAccount = () => {
+  return useMutation({
+    mutationFn: signOutAccount,
+  });
+};
