@@ -34,7 +34,7 @@ const SigninForm = () => {
 
   // 2. Define a submit handler.
   const handleSignin = async (user: z.infer<typeof SigninValidation>) => {
-    const session = await signInAccount(user);
+    const session = await signInAccount(user);                              // Logueamos al usuario
 
     if (!session) {
       toast({ title: "Login failed. Please try again." });
@@ -42,9 +42,9 @@ const SigninForm = () => {
       return;
     }
 
-    const isLoggedIn = await checkAuthUser();
+    const isLoggedIn = await checkAuthUser();   // Obtiene el usuario logueado -> setUser - setIsAuthenticated -> true
 
-    if (isLoggedIn) {
+    if (isLoggedIn) {                           // Si esta logueado, reseteo del form y navigate a "/".
       form.reset();
 
       navigate("/");
