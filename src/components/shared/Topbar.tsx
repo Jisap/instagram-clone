@@ -12,6 +12,11 @@ const Topbar = () => {
   const { user } = useUserContext();
   const { mutate: signOut, isSuccess } = useSignOutAccount();
 
+  useEffect(() => {
+    if (isSuccess) navigate(0);
+  }, [isSuccess]);
+
+
   return (
     <section className="topbar">
       <div className="flex-between py-4 px-5">
