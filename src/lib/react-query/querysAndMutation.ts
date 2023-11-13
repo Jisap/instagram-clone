@@ -50,9 +50,9 @@ export const useCreatePost = () => {
 
 
 export const useGetRecentPosts = () => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-    queryFn: getRecentPosts,
+  return useQuery({                                   // useQuery se usa para realizar una consulta y obtener las publicaciones más recientes.
+    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],          // Identificador en cache
+    queryFn: getRecentPosts,                          // Función de appWrite que se usa.
   });
 };
 
