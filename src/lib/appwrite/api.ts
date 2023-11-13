@@ -114,23 +114,23 @@ export async function signOutAccount() {
 // ============================== CREATE POST
 export async function createPost(post: INewPost) {
   try {
-    // Upload file to appwrite storage
-    const uploadedFile = await uploadFile(post.file[0]);
+    
+    const uploadedFile = await uploadFile(post.file[0]);  // Upload file to appwrite storage
 
     if (!uploadedFile) throw Error;
 
-    // Get file url
-    const fileUrl = getFilePreview(uploadedFile.$id);
+   
+    const fileUrl = getFilePreview(uploadedFile.$id);      // Get file url
     if (!fileUrl) {
       await deleteFile(uploadedFile.$id);
       throw Error;
     }
 
-    // Convert tags into array
-    const tags = post.tags?.replace(/ /g, "").split(",") || [];
+    
+    const tags = post.tags?.replace(/ /g, "").split(",") || []; // Convert tags into array
 
-    // Create post
-    const newPost = await databases.createDocument(
+   
+    const newPost = await databases.createDocument(              // Create post
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
       ID.unique(),
