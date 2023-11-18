@@ -325,7 +325,7 @@ export async function updatePost(post: IUpdatePost) {
     const updatedPost = await databases.updateDocument(       // Actualización del post
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
-      post.postId,
+      post.postId, // en el id existente
       {
         caption: post.caption,
         imageUrl: image.imageUrl,
@@ -350,6 +350,27 @@ export async function updatePost(post: IUpdatePost) {
 
     return updatedPost;
 
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== DELETE POST
+export async function deletePost(postId?: string, imageId?: string) {
+  if (!postId || !imageId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(imageId);
+
+    return { status: "Ok" };
   } catch (error) {
     console.log(error);
   }
