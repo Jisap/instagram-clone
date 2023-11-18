@@ -276,4 +276,83 @@ export async function deleteSavedPost(savedRecordId: string) {
   }
 }
 
+// ============================== GET POST BY ID
+export async function getPostById(postId?: string) {
+  if (!postId) throw Error;
+
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    );
+
+    if (!post) throw Error;
+
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== UPDATE POST
+export async function updatePost(post: IUpdatePost) {
+
+  const hasFileToUpdate = post.file.length > 0; // Se comprueba que el post tiene un archivo a subir 
+
+  try {
+    let image = {
+      imageUrl: post.imageUrl,  // url
+      imageId: post.imageId,    // id
+    };
+
+    if (hasFileToUpdate) {                                  // Si hay archivo nuevo a subir
+      
+      const uploadedFile = await uploadFile(post.file[0]);  // se sube a AppWrite
+      if (!uploadedFile) throw Error;
+
+      const fileUrl = getFilePreview(uploadedFile.$id);     // Se obtiene su url
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);                 // y se borra el antiguo file
+        throw Error;
+      }
+
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id }; // Definimos el objeto image con la nueva url y file
+    }
+
+    const tags = post.tags?.replace(/ /g, "").split(",") || []; // Convert tags into array
+
+    const updatedPost = await databases.updateDocument(       // Actualización del post
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+        location: post.location,
+        tags: tags,
+      }
+    );
+
+    if (!updatedPost) {
+      
+      if (hasFileToUpdate) {              // Sino se actualizo borramos el file subido
+        await deleteFile(image.imageId);
+      }
+
+      throw Error;                        // Y sino se subio el file lanzamos error
+    }
+
+    if (hasFileToUpdate) {                // Si si se actualizo y el file se subio
+      await deleteFile(post.imageId);     // borramos la imagenId del post en bd
+    }
+
+    return updatedPost;
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 
