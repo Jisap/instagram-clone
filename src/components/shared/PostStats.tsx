@@ -5,14 +5,14 @@ import { checkIsLiked } from "@/lib/utils";
 import { useDeleteSavedPost, useGetCurrentUser, useLikePost, useSavePost } from "@/lib/react-query/querysAndMutation";
 
 type PostStatsProps = {
-  post: Models.Document;
+  post?: Models.Document;
   userId: string;
 };
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
   
   const location = useLocation();
-  const likesList = post.likes.map((user: Models.Document) => user.$id); // Obtenemos los likes que tiene el post (cada like contiene el user que dio like)
+  const likesList = post?.likes.map((user: Models.Document) => user.$id); // Obtenemos los likes que tiene el post (cada like contiene el user que dio like)
 
   const [likes, setLikes] = useState<string[]>(likesList);  // Estado para likes con valor por defecto el que trae el post
   const [isSaved, setIsSaved] = useState(false);
@@ -24,7 +24,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { data: currentUser } = useGetCurrentUser();        // Usuario logueado
 
   const savedPostRecord = currentUser?.save.find(             // Dentro de Appwrite buscamos en el campo save del usuario logueado
-    (record: Models.Document) => record.post.$id === post.$id // aquellos registros de posts === post.id que se esta pulsando para grabar
+    (record: Models.Document) => record.post.$id === post?.$id // aquellos registros de posts === post.id que se esta pulsando para grabar
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     }
 
     setLikes(likesArray);
-    likePost({ postId: post.$id, likesArray });               // Se ejecuta la mutation
+    likePost({ postId: post?.$id || '', likesArray });        // Se ejecuta la mutation
   }
 
   const handleSavePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -54,7 +54,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       return deleteSavePost(savedPostRecord.$id);     // quiere decir que quiere hacer la acción contraria desgrabar el post
     }
 
-    savePost({ userId: userId, postId: post.$id });   // En caso contrario ejecuta la mutation para grabarla.
+    savePost({ userId: userId, postId: post?.$id || '' });   // En caso contrario ejecuta la mutation para grabarla.
     setIsSaved(true);
   }
 
