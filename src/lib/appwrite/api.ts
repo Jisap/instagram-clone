@@ -395,5 +395,45 @@ export async function getUserPosts(userId?: string) {
   }
 }
 
+// ============================== GET POSTS
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.search("caption", searchTerm)]
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+
+  const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(9)];   // Consultas a la bd ordenados por fecha y limitados a 9 rdos
+
+  if (pageParam) {                                          // Si existe pageParam (cursor)
+    queries.push(Query.cursorAfter(pageParam.toString()));  // se agrega una consulta adicional para obtener resultados después de un cursor específico
+  }
+
+  try {
+    const posts = await databases.listDocuments(  // Consulta a la bd listando los documentos
+      appwriteConfig.databaseId,                  // de la base de appWrite
+      appwriteConfig.postCollectionId,            // en la colección de posts
+      queries
+    );
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 

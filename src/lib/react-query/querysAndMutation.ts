@@ -10,11 +10,13 @@ import {
   deletePost,
   deleteSavedPost,
   getCurrentUser,
+  getInfinitePosts,
   getPostById,
   getRecentPosts,
   getUserPosts,
   likePost,
   savePost,
+  searchPosts,
   signInAccount, 
   signOutAccount,
   updatePost
@@ -56,6 +58,35 @@ export const useCreatePost = () => {
   });
 };
 
+// ============================================================
+// POST QUERIES
+// ============================================================
+
+export const useGetPosts = () => {
+
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],              // clave única de consulta "getInfinitePosts"
+    queryFn: getInfinitePosts as any,                       // Función de appWrite para hacer la consulta
+    getNextPageParam: (lastPage: any) => {                  // Func que toma la última página de rdos y devuelve el param de la próxima pag
+      
+      if (lastPage && lastPage.documents.length === 0) {    // Si no hay datos no hay más páginas
+        return null;
+      }
+
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id; // Si hay datos se utiliza el $id de la último doc de la 
+      return lastId;                                                        // última página como cursor para la siguiente página
+    },
+    initialPageParam: null
+  });
+};
+
+export const useSearchPosts = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+    queryFn: () => searchPosts(searchTerm),
+    enabled: !!searchTerm,
+  });
+};
 
 export const useGetRecentPosts = () => {
   return useQuery({                                   // useQuery se usa para realizar una consulta y obtener las publicaciones más recientes.
