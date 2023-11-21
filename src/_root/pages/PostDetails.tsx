@@ -6,6 +6,7 @@ import { useDeletePost, useGetPostById, useGetUserPosts } from "@/lib/react-quer
 import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import PostStats from "@/components/shared/PostStats";
+import GridPostList from "@/components/shared/GridPostList";
 
 
 const PostDetails = () => {
@@ -16,14 +17,16 @@ const PostDetails = () => {
 
   const { data: post, isPending } = useGetPostById(id);
   const { mutate: deletePost } = useDeletePost();
-  const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
-    post?.creator.$id
-  );
+  const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(post?.creator.$id);
 
   const handleDeletePost = () => {
     deletePost({ postId: id, imageId: post?.imageId });
     navigate(-1);
   };
+
+  const relatedPosts = userPosts?.documents.filter(
+    (userPost) => userPost.$id !== id
+  );
 
 
   return (
@@ -123,11 +126,11 @@ const PostDetails = () => {
         <h3 className="body-bold md:h3-bold w-full my-10">
           More Related Posts
         </h3>
-        {/* {isUserPostLoading || !relatedPosts ? (
+        {isUserPostLoading || !relatedPosts ? (
           <Loader />
         ) : (
           <GridPostList posts={relatedPosts} />
-        )} */}
+        )}
       </div>
     </div>
   )
