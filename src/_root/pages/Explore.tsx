@@ -11,12 +11,12 @@ import { useEffect, useState } from "react";
 const Explore = () => {
 
   const { ref, inView } = useInView();
-
+  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts(); // posts -> pages -> documents[]
+console.log(posts)
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedSearch);
 
-  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
 
   useEffect(() => {
     if (inView && !searchValue) {
@@ -31,7 +31,9 @@ const Explore = () => {
       </div>
     );
 
+  // Se muestran rdos de busqueda si el searchValue tiene contenido  
   const shouldShowSearchResults = searchValue !== "";
+  // Si el searchValue no tiene contenido y cada página de documentos de react-query = 0 tampoco se muestran post
   const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item.documents.length === 0);
 
   return (
