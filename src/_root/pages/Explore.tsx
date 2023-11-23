@@ -12,7 +12,7 @@ const Explore = () => {
 
   const { ref, inView } = useInView();
   const { data: posts, fetchNextPage, hasNextPage } = useGetPosts(); // posts -> pages -> documents[]
-console.log(posts)
+
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedSearch);
@@ -89,7 +89,9 @@ console.log(posts)
         )}
       </div>
 
-      {hasNextPage && !searchValue && (
+      {/* Cuando este div entra en la vista se activa la lógica de paginación, y se carga la próxima página de resultados utilizando fetchNextPage */}
+
+      {hasNextPage && !searchValue && (     
         <div ref={ref} className="mt-10">
           <Loader />
         </div>
