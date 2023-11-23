@@ -463,4 +463,77 @@ export async function getUsers(limit?: number) {
   }
 }
 
+// ============================== GET USER BY ID
+export async function getUserById(userId: string) {
+  try {
+    const user = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userId
+    );
 
+    if (!user) throw Error;
+
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ============================== UPDATE USER
+export async function updateUser(user: IUpdateUser) {
+
+  const hasFileToUpdate = user.file.length > 0;
+  try {
+    let image = {
+      imageUrl: user.imageUrl,
+      imageId: user.imageId,
+    };
+
+    if (hasFileToUpdate) {
+      
+      const uploadedFile = await uploadFile(user.file[0]);    // Upload new file to appwrite storage
+      if (!uploadedFile) throw Error;
+
+      const fileUrl = getFilePreview(uploadedFile.$id);       // Get new file url
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+    }
+
+    const updatedUser = await databases.updateDocument(       //  Update user
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      user.userId,
+      {
+        name: user.name,
+        bio: user.bio,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+      }
+    );
+
+    // Failed to update
+    if (!updatedUser) {
+      
+      if (hasFileToUpdate) {                        // Delete new file that has been recently uploaded
+        await deleteFile(image.imageId);
+      }
+      
+      throw Error;                                  // If no new file uploaded, just throw error
+    }
+
+    // Safely delete old file after successful update
+    if (user.imageId && hasFileToUpdate) {
+      await deleteFile(user.imageId);
+    }
+
+    return updatedUser;
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
