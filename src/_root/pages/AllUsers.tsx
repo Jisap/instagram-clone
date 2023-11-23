@@ -9,7 +9,7 @@ const AllUsers = () => {
   const { toast } = useToast();
 
   const { data: creators, isLoading, isError: isErrorCreators } = useGetUsers();
-console.log(creators)
+
   if (isErrorCreators) {
     toast({ title: "Something went wrong." });
 
